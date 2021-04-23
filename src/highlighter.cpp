@@ -1,44 +1,26 @@
 #include "highlighter.hpp"
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent) : QSyntaxHighlighter(parent) {
-    // Test: Keywords
+}
+
+void SyntaxHighlighter::addSingleRule(QTextCharFormat format, QString expression) {
     SyntaxRule rule;
     rule.multiLine = false;
-    
-    rule.format = QTextCharFormat();
-    rule.format.setForeground(Qt::darkGreen);
-    rule.format.setFontWeight(QFont::Bold);
-    
-    QString keywords[] = {
-        QStringLiteral("\\bconst\\b"), QStringLiteral("\\bint\\b"), QStringLiteral("\\bvoid\\b")
-    };
-    for (QString &keyword : keywords) {
-        rule.pattern = QRegularExpression(keyword);
-        syntaxRules.append(rule);
-    }
-    
-    // Quotations
-    rule.format = QTextCharFormat();
-    rule.format.setForeground(Qt::red);
-    rule.pattern = QRegularExpression(QStringLiteral("\".*\""));
+    rule.format = format;
+    rule.pattern = QRegularExpression(expression);
     syntaxRules.append(rule);
-    
-    // Double-line comments
+}
+
+void SyntaxHighlighter::addDoubleRule(QTextCharFormat format, QString startExpr, QString endExpr) {
+    SyntaxRule rule;
     rule.multiLine = true;
-    
-    rule.format = QTextCharFormat();
-    rule.format.setFontWeight(QFont::Bold);
-    rule.format.setForeground(Qt::blue);
-    
-    // /* */
-    rule.pattern = QRegularExpression(QStringLiteral("/\\*"));
-    rule.endPattern = QRegularExpression(QStringLiteral("\\*/"));
+    rule.format = format;
+    rule.startExpr = startExpr;
+    rule.endExpr = endExpr;
+    rule.statePos = statePos;
     syntaxRules.append(rule);
     
-    // /+ +/
-    rule.pattern = QRegularExpression(QStringLiteral("/\\+"));
-    rule.endPattern = QRegularExpression(QStringLiteral("\\+/"));
-    syntaxRules.append(rule);
+    ++statePos;
 }
 
 void SyntaxHighlighter::highlightBlock(const QString &text) {
@@ -52,31 +34,31 @@ void SyntaxHighlighter::highlightBlock(const QString &text) {
         }
     }
     
-    // Handle double-line rules
-    setCurrentBlockState(0);
-    int startIndex = 0;
+    // Handle double-line comments
+    int state = previousBlockState();
+    int start = 0;
     
     for (SyntaxRule rule : syntaxRules) {
         if (!rule.multiLine) continue;
         
-        if (previousBlockState() != 1)
-            startIndex = text.indexOf(rule.pattern);
-            
-        while (startIndex >= 0) {
-            QRegularExpressionMatch match = rule.endPattern.match(text, startIndex);
-            int endIndex = match.capturedStart();
-            int commentLength = 0;
-            
-            if (endIndex == -1) {
-                setCurrentBlockState(1);
-                commentLength = text.length() - startIndex;
+        for (int i = 0; i<text.length(); i++) {
+            if (state == rule.statePos) {
+                if (text.mid(i, rule.endExpr.length()) == rule.endExpr) {
+                    state = -1;
+                    setFormat(start, i - start + rule.endExpr.length(), rule.format);
+                }
             } else {
-                commentLength = endIndex - startIndex + match.capturedLength();
+                if (text.mid(i, rule.startExpr.length()) == rule.startExpr) {
+                    start = i;
+                    state = rule.statePos;
+                }
             }
-            
-            setFormat(startIndex, commentLength, rule.format);
-            startIndex = text.indexOf(rule.pattern, startIndex + commentLength);
         }
+        
+        if (state > 0)
+            setFormat(start, text.length() - start, rule.format);
+     
+        setCurrentBlockState(state);
     }
 }
 

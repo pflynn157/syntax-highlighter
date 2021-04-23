@@ -12,3 +12,5 @@ int x = 20;
 int y = 30;
 +/
 
+int x = "Hello!";
+
