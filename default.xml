@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<theme>
+    <name>Default</name>
+    
+    <category id="keywords">
+        <fg>dark_green</fg>
+        <bg>none</bg>
+        <b>true</b>
+        <i>false</i>
+    </category>
+    
+    <category id="literal">
+        <fg>red</fg>
+        <bg>none</bg>
+        <b>false</b>
+        <i>false</i>
+    </category>
+    
+    <category id="comment">
+        <fg>blue</fg>
+        <bg>none</bg>
+        <b>true</b>
+        <i>false</i>
+    </category>
+</theme>
