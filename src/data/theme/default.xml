@@ -3,21 +3,21 @@
     <name>Default</name>
     
     <category id="keywords">
-        <fg>dark_green</fg>
+        <fg>#009933</fg>
         <bg>none</bg>
         <b>true</b>
         <i>false</i>
     </category>
     
     <category id="literal">
-        <fg>red</fg>
+        <fg>#ff00ff</fg>
         <bg>none</bg>
         <b>false</b>
         <i>false</i>
     </category>
     
     <category id="comment">
-        <fg>blue</fg>
+        <fg>#0066cc</fg>
         <bg>none</bg>
         <b>true</b>
         <i>false</i>

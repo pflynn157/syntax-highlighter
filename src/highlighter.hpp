@@ -5,6 +5,7 @@
 #include <QTextCharFormat>
 #include <QRegularExpression>
 #include <QStringLiteral>
+#include <QMap>
 
 struct SyntaxRule {
     QRegularExpression pattern;
@@ -19,11 +20,14 @@ class SyntaxHighlighter : public QSyntaxHighlighter {
     Q_OBJECT
 public:
     explicit SyntaxHighlighter(QTextDocument *parent);
+    void addSingleRule(QString category, QString expression);
     void addSingleRule(QTextCharFormat format, QString expression);
+    void addDoubleRule(QString category, QString startExpr, QString endExpr);
     void addDoubleRule(QTextCharFormat format, QString startExpr, QString endExpr);
 protected:
     void highlightBlock(const QString &text) override;
 private:
+    QMap<QString, QTextCharFormat> formatMap;
     QVector<SyntaxRule> syntaxRules;
     int statePos = 3;
 };

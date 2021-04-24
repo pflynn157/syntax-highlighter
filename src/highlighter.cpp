@@ -1,6 +1,89 @@
+#include <QFile>
+#include <QtXml>
+#include <QMap>
+#include <iostream>
+
 #include "highlighter.hpp"
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent) : QSyntaxHighlighter(parent) {
+    QString text = "";
+    QFile file(":/data/theme/default.xml");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        std::cout << "Unable to open theme." << std::endl;
+        return;
+    }
+    
+    // Parse
+    QDomDocument doc("default");
+    if (!doc.setContent(&file)) {
+        std::cout << "Unable to read theme." << std::endl;
+        file.close();
+        return;
+    }
+    file.close();
+    
+    QDomElement element = doc.documentElement();
+    QDomNode node = element.firstChild();
+    
+    while (!node.isNull()) {
+        element = node.toElement();
+        if (element.isNull()) {
+            node = node.nextSibling();
+            continue;
+        }
+        
+        if (element.tagName() == "name") {
+            node = node.nextSibling();
+            continue;
+        } else if (element.tagName() != "category") {
+            std::cout << "Unknown tag name: " << element.tagName().toStdString() << std::endl;
+            node = node.nextSibling();
+            continue;
+        }
+        
+        QString name = element.attribute("id", "");
+        if (name.length() == 0) {
+            std::cout << "Error: Expected ID tag" << std::endl;
+            node = node.nextSibling();
+            continue;
+        }
+        
+        QTextCharFormat format;
+        QDomNode syntaxNode = element.firstChild();
+        
+        while (!syntaxNode.isNull()) {
+            QDomElement syntaxElement = syntaxNode.toElement();
+            if (syntaxElement.isNull()) {
+                syntaxNode = syntaxNode.nextSibling();
+                continue;
+            }
+            
+            if (syntaxElement.tagName() == "fg") {
+                format.setForeground(QColor(syntaxElement.text()));
+            } else if (syntaxElement.tagName() == "bg") {
+                //TODO
+            } else if (syntaxElement.tagName() == "b") {
+                if (syntaxElement.text() == "true") {
+                    format.setFontWeight(QFont::Bold);
+                }
+            } else if (syntaxElement.tagName() == "i") {
+                //TODO
+            }
+            
+            syntaxNode = syntaxNode.nextSibling();
+        }
+        
+        formatMap[name] = format;
+        node = node.nextSibling();
+    }
+}
+
+void SyntaxHighlighter::addSingleRule(QString category, QString expression) {
+    SyntaxRule rule;
+    rule.multiLine = false;
+    rule.format = formatMap[category];
+    rule.pattern = QRegularExpression(expression);
+    syntaxRules.append(rule);
 }
 
 void SyntaxHighlighter::addSingleRule(QTextCharFormat format, QString expression) {
@@ -9,6 +92,18 @@ void SyntaxHighlighter::addSingleRule(QTextCharFormat format, QString expression
     rule.format = format;
     rule.pattern = QRegularExpression(expression);
     syntaxRules.append(rule);
+}
+
+void SyntaxHighlighter::addDoubleRule(QString category, QString startExpr, QString endExpr) {
+    SyntaxRule rule;
+    rule.multiLine = true;
+    rule.format = formatMap[category];
+    rule.startExpr = startExpr;
+    rule.endExpr = endExpr;
+    rule.statePos = statePos;
+    syntaxRules.append(rule);
+    
+    ++statePos;
 }
 
 void SyntaxHighlighter::addDoubleRule(QTextCharFormat format, QString startExpr, QString endExpr) {

@@ -22,22 +22,19 @@ Window::Window() {
         QStringLiteral("\\bconst\\b"), QStringLiteral("\\bint\\b"), QStringLiteral("\\bvoid\\b")
     };
     for (QString &keyword : keywords) {
-        highlight->addSingleRule(format, keyword);
+        highlight->addSingleRule("keywords", keyword);
     }
     
     // Add quotes
-    format.setForeground(Qt::red);
-    highlight->addSingleRule(format, QStringLiteral("\".*\""));
+    //format.setForeground(Qt::red);
+    highlight->addSingleRule("literal", QStringLiteral("\".*\""));
     
     // Double-line comments
-    format.setFontWeight(QFont::Bold);
-    format.setForeground(Qt::blue);
+    //format.setFontWeight(QFont::Bold);
+    //format.setForeground(Qt::blue);
     
-    highlight->addDoubleRule(format, QStringLiteral("/*"), QStringLiteral("*/"));
-    highlight->addDoubleRule(format, QStringLiteral("/+"), QStringLiteral("+/"));
-    
-    //highlight->addDoubleRule(format, QStringLiteral("/\\*"), QStringLiteral("\\*/"));
-    //highlight->addDoubleRule(format, QStringLiteral("/\\+"), QStringLiteral("\\+/"));
+    highlight->addDoubleRule("comment", QStringLiteral("/*"), QStringLiteral("*/"));
+    highlight->addDoubleRule("comment", QStringLiteral("/+"), QStringLiteral("+/"));
 }
 
 Window::~Window() {
