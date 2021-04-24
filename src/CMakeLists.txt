@@ -5,6 +5,7 @@ set(BASE_SRC
     main.cpp
     window.cpp
     highlighter.cpp
+    syntax.qrc
 )
 
 set(SRC ${BASE_SRC})
@@ -15,5 +16,6 @@ target_link_libraries(uds-syntax-highlighter
     Qt5::Core
     Qt5::Gui
     Qt5::Widgets
+    Qt5::Xml
 )
 

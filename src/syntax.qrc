@@ -1,0 +1,8 @@
+<RCC version="1.0">
+    <qresource>
+        <file>data/syntax/c.xml</file>
+        
+        <file>data/theme/default.xml</file>
+    </qresource>
+</RCC>
+

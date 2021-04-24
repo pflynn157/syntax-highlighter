@@ -11,6 +11,7 @@ find_package(Qt5 REQUIRED COMPONENTS
     Core
     Widgets
     Gui
+    Xml
 )
 
 add_subdirectory(src)
