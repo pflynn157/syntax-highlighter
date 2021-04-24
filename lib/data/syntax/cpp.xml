@@ -2,14 +2,20 @@
 <syntax>
     <name>C++</name>
     <format>
-        <class id="keywords" style="keywords">\b($)\b</class>
+        <class id="keywords" style="keywords">\b$\b</class>
         <class id="types" style="types">\b$\b</class>
+        <class id="storage-class" style="types">\b$\b</class>
         
         <regex style="literal">".*"</regex>
-        <comment style="comment">//</comment>
+        <regex style="literal">[-+]?\b\d+\b</regex>
+        <regex style="literal">\b0[xX][0-9a-fA-F]+\b</regex>
+        <regex style="literal">(\b[0-9]+\.([0-9]+\b)?|\.[0-9]+\b)</regex>
+        <regex style="literal">\b[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?\b</regex>
         
         <regex style="preprocessor">#(define|undef|error|pragma|ident|if(n?def)?|else|elif|endif|line|warning)[^\n]*</regex>
         <regex style="preprocessor">#include[^"]*</regex>
+        
+        <comment style="comment">//</comment>
         
         <multiline style="comment">
             <start>/*</start>
@@ -115,6 +121,20 @@
             <item>mutable</item>
             <item>nullptr_t</item>
             <item>wchar_t</item>
+        </class>
+        <class id="storage-class">
+          <item>(_A|a)lignas</item>
+          <item>_Atomic</item>
+          <item>(_N|n)oreturn</item>
+          <item>(_T|t)hread_local</item>
+          <item>auto</item>
+          <item>const</item>
+          <item>extern</item>
+          <item>inline</item>
+          <item>register</item>
+          <item>restrict</item>
+          <item>static</item>
+          <item>volatile</item>
         </class>
     </data>
 </syntax>

@@ -16,7 +16,7 @@ Window::Window() {
     
     QTextEdit *edit = new QTextEdit;
     highlight = new SyntaxHighlighter(edit->document());
-    highlight->setLanguage("cpp");
+    highlight->setLanguage("c");
     this->setCentralWidget(edit);
 }
 
