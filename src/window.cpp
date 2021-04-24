@@ -2,9 +2,10 @@
 #include <QStringLiteral>
 #include <iostream>
 
+#include <highlighter.hpp>
+#include <repository.hpp>
+
 #include "window.hpp"
-#include "highlighter.hpp"
-#include "repository.hpp"
 
 Window::Window() {
     this->setWindowTitle("Qt5 Template");

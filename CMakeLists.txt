@@ -7,6 +7,8 @@ set(CMAKE_AUTORCC ON)
 
 add_compile_options(-std=c++14)
 
+include_directories(lib)
+
 find_package(Qt5 REQUIRED COMPONENTS
     Core
     Widgets
@@ -14,6 +16,7 @@ find_package(Qt5 REQUIRED COMPONENTS
     Xml
 )
 
+add_subdirectory(lib)
 add_subdirectory(src)
 
 #if (UNIX)
