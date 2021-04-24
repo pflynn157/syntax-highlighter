@@ -1,5 +1,6 @@
 #include <QTextEdit>
 #include <QStringLiteral>
+#include <iostream>
 
 #include "window.hpp"
 #include "highlighter.hpp"
@@ -11,6 +12,12 @@ Window::Window() {
     
     Repository::themeList();
     Repository::syntaxList();
+    
+    QString syntax_def = Repository::defForName("C");
+    std::cout << "SYNTAX DEF: " << syntax_def.toStdString() << std::endl;
+    
+    QString theme_def = Repository::themeForName("Classic");
+    std::cout << "THEME DEF: " << theme_def.toStdString() << std::endl;
     
     QTextEdit *edit = new QTextEdit;
     SyntaxHighlighter *highlight = new SyntaxHighlighter(edit->document());

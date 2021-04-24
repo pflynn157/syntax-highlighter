@@ -1,5 +1,6 @@
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QtXml>
 #include <iostream>
 
@@ -18,6 +19,21 @@ QStringList Repository::syntaxList() {
     return names;
 }
 
+// Returns the definition file for a given syntax name
+QString Repository::defForName(QString name) {
+    QStringList dirEntries = getEntries(":/data/syntax");
+    QStringList names;
+    
+    for (QString item : dirEntries) {
+        QString currentName = getName(":/data/syntax/" + item);
+        if (currentName == name) {
+            return QFileInfo(item).baseName();
+        }
+    }
+    
+    return "";
+}
+
 // Returns a list of valid syntax themes
 QStringList Repository::themeList() {
     QStringList dirEntries = getEntries(":/data/theme");
@@ -29,6 +45,21 @@ QStringList Repository::themeList() {
     }
 
     return names;
+}
+
+// Returns the theme file for a given theme name
+QString Repository::themeForName(QString name) {
+    QStringList dirEntries = getEntries(":/data/theme");
+    QStringList names;
+    
+    for (QString item : dirEntries) {
+        QString currentName = getName(":/data/theme/" + item);
+        if (currentName == name) {
+            return QFileInfo(item).baseName();
+        }
+    }
+    
+    return "";
 }
 
 // Returns a list of given entries
