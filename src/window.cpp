@@ -10,6 +10,7 @@ Window::Window() {
     
     QTextEdit *edit = new QTextEdit;
     SyntaxHighlighter *highlight = new SyntaxHighlighter(edit->document());
+    highlight->setLanguage("c");
     this->setCentralWidget(edit);
     
     // Add keywords

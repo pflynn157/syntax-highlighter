@@ -8,7 +8,7 @@
         
         <multiline style="comment">
             <start>/*</start>
-            <end>*/</start>
+            <end>*/</end>
         </multiline>
         
         <multiline style="comment">

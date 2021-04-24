@@ -6,7 +6,6 @@
 #include "highlighter.hpp"
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent) : QSyntaxHighlighter(parent) {
-    QString text = "";
     QFile file(":/data/theme/default.xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cout << "Unable to open theme." << std::endl;
@@ -75,6 +74,162 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent) : QSyntaxHighlighter
         
         formatMap[name] = format;
         node = node.nextSibling();
+    }
+}
+
+void SyntaxHighlighter::setLanguage(QString lang) {
+    QFile file(":/data/syntax/" + lang + ".xml");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        std::cout << "Unable to open syntax." << std::endl;
+        return;
+    }
+    
+    // Parse
+    QDomDocument doc("syntax");
+    if (!doc.setContent(&file)) {
+        std::cout << "Unable to read syntax." << std::endl;
+        file.close();
+        return;
+    }
+    file.close();
+    
+    QDomElement element = doc.documentElement();
+    QDomNode node = element.firstChild();
+    
+    // Needed for classes
+    QVector<QString> allClasses;
+    QMap<QString, QString> classStyles;
+    QMap<QString, QString> classExpr;
+    QMap<QString, QStringList> classData;   
+    
+    // Read the document
+    while (!node.isNull()) {
+        element = node.toElement();
+        if (element.isNull()) {
+            node = node.nextSibling();
+            continue;
+        }
+        
+        if (element.tagName() == "name") {
+            // blah
+        // Read the format section
+        } else if (element.tagName() == "format") {
+            QDomNode formatNode = element.firstChild();
+            
+            while (!formatNode.isNull()) {
+                QDomElement formatElement = formatNode.toElement();
+                if (formatElement.isNull()) {
+                    formatNode = formatNode.nextSibling();
+                    continue;
+                }
+                
+                // The Regex specifies a direct expression; this is the easiest to handle
+                if (formatElement.tagName() == "regex") {
+                    QString style = formatElement.attribute("style");
+                    QString regex = formatElement.text();
+                    addSingleRule(style, regex);
+                    
+                // The mutliline specifies an expression spanning multiple lines
+                } else if (formatElement.tagName() == "multiline") {
+                    QString style = formatElement.attribute("style");
+                    QString startExpr = "";
+                    QString endExpr = "";
+                    
+                    QDomNode mlnode = formatElement.firstChild();
+                    while (!mlnode.isNull()) {
+                        QDomElement mlelement = mlnode.toElement();
+                        if (mlelement.isNull()) {
+                            mlnode = mlnode.nextSibling();
+                            continue;
+                        }
+                        
+                        if (mlelement.tagName() == "start") startExpr = mlelement.text();
+                        else if (mlelement.tagName() == "end") endExpr = mlelement.text();
+                        
+                        mlnode = mlnode.nextSibling();
+                    }
+                    
+                    if (startExpr == "" || endExpr == "") {
+                        std::cout << "Error: Invalid multiline specification." << std::endl;
+                    } else {
+                        addDoubleRule(style, startExpr, endExpr);
+                    }
+                    
+                // The class specifies a large group that follow the same expression and style
+                } else if (formatElement.tagName() == "class") {
+                    QString className = formatElement.attribute("id");
+                    classStyles[className] = formatElement.attribute("style");
+                    classExpr[className] = formatElement.text();
+                    allClasses.append(className);
+                }
+                
+                formatNode = formatNode.nextSibling();
+            }
+          
+        // Read the data section
+        } else if (element.tagName() == "data") {
+            QDomNode dataNode = element.firstChild();
+            
+            while (!dataNode.isNull()) {
+                QDomElement dataElement = dataNode.toElement();
+                if (dataElement.isNull()) {
+                    dataNode = dataNode.nextSibling();
+                    continue;
+                }
+                
+                if (dataElement.tagName() != "class") {
+                    std::cout << "Error: Unknown data element." << std::endl;
+                    dataNode = dataNode.nextSibling();
+                    continue;
+                }
+                
+                QString id = dataElement.attribute("id");
+                QStringList items;
+                
+                // Read all items from the class
+                QDomNode itemNode = dataElement.firstChild();
+                
+                while (!itemNode.isNull()) {
+                    QDomElement itemElement = itemNode.toElement();
+                    if (itemElement.isNull()) {
+                        itemNode = itemNode.nextSibling();
+                        continue;
+                    }
+                    
+                    if (itemElement.tagName() == "item") {
+                        items.push_back(itemElement.text());
+                    } else {
+                        std::cout << "Error: Unknown class list item." << std::endl;
+                    }
+                    
+                    itemNode = itemNode.nextSibling();
+                }
+                
+                // Add the vector to the map
+                classData[id] = items;
+                
+                dataNode = dataNode.nextSibling();
+            }
+        
+        // Unknown nodes
+        } else {
+            std::cout << "Error: Unknown syntax element." << std::endl;
+        }
+        
+        node = node.nextSibling();
+    }
+    
+    // Add all the class elements
+    for (QString className : allClasses) {
+        QString style = classStyles[className];
+        QString expr = classExpr[className];
+        QStringList items = classData[className];
+        
+        for (QString item : items) {
+            QString newExpr = expr;
+            newExpr.replace("$", item);
+            addSingleRule(style, newExpr);
+        }
     }
 }
 

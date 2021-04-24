@@ -20,6 +20,7 @@ class SyntaxHighlighter : public QSyntaxHighlighter {
     Q_OBJECT
 public:
     explicit SyntaxHighlighter(QTextDocument *parent);
+    void setLanguage(QString lang);
     void addSingleRule(QString category, QString expression);
     void addDoubleRule(QString category, QString startExpr, QString endExpr);
 protected:
