@@ -6,7 +6,14 @@
 #include "highlighter.hpp"
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent) : QSyntaxHighlighter(parent) {
-    QFile file(":/data/theme/default.xml");
+    setTheme("default");
+}
+
+void SyntaxHighlighter::setTheme(QString name) {
+    currentTheme = name;
+    formatMap.clear();
+
+    QFile file(":/data/theme/" + name + ".xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cout << "Unable to open theme." << std::endl;
         return;
@@ -75,9 +82,17 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent) : QSyntaxHighlighter
         formatMap[name] = format;
         node = node.nextSibling();
     }
+    
+    this->rehighlight();
+    if (currentSyntax != "") {
+        setLanguage(currentSyntax);
+    }
 }
 
 void SyntaxHighlighter::setLanguage(QString lang) {
+    currentSyntax = lang;
+    syntaxRules.clear();
+    
     QFile file(":/data/syntax/" + lang + ".xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cout << "Unable to open syntax." << std::endl;
@@ -231,6 +246,8 @@ void SyntaxHighlighter::setLanguage(QString lang) {
             addSingleRule(style, newExpr);
         }
     }
+    
+    this->rehighlight();
 }
 
 void SyntaxHighlighter::addSingleRule(QString category, QString expression) {

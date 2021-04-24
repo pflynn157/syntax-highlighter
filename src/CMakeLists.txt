@@ -3,6 +3,7 @@ project(uds-syntax-highlighter)
 
 set(BASE_SRC
     main.cpp
+    toolbar.cpp
     window.cpp
 )
 

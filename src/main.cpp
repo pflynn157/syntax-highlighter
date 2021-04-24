@@ -1,12 +1,15 @@
 #include <QApplication>
 
 #include "window.hpp"
+#include "global.hpp"
+
+Window *win;
 
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
     
-    Window win;
-    win.show();
+    win = new Window;
+    win->show();
     
     return app.exec();
 }

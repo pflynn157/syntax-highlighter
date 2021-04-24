@@ -20,12 +20,14 @@ class SyntaxHighlighter : public QSyntaxHighlighter {
     Q_OBJECT
 public:
     explicit SyntaxHighlighter(QTextDocument *parent);
+    void setTheme(QString name);
     void setLanguage(QString lang);
     void addSingleRule(QString category, QString expression);
     void addDoubleRule(QString category, QString startExpr, QString endExpr);
 protected:
     void highlightBlock(const QString &text) override;
 private:
+    QString currentTheme, currentSyntax;
     QMap<QString, QTextCharFormat> formatMap;
     QVector<SyntaxRule> syntaxRules;
     int statePos = 3;

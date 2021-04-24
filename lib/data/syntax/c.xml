@@ -10,11 +10,6 @@
             <start>/*</start>
             <end>*/</end>
         </multiline>
-        
-        <multiline style="comment">
-            <start>/+</start>
-            <end>+/</end>
-        </multiline>
     </format>
     <data>
         <class id="keywords">

@@ -4,6 +4,7 @@
         <file>data/syntax/test.xml</file>
         
         <file>data/theme/default.xml</file>
+        <file>data/theme/kate.xml</file>
     </qresource>
 </RCC>
 
