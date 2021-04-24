@@ -5,6 +5,7 @@ set(BASE_SRC
     main.cpp
     window.cpp
     highlighter.cpp
+    repository.cpp
     syntax.qrc
 )
 
