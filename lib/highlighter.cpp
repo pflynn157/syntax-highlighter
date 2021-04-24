@@ -144,6 +144,12 @@ void SyntaxHighlighter::setLanguage(QString lang) {
                     QString regex = formatElement.text();
                     addSingleRule(style, regex);
                     
+                // Line comments
+                } else if (formatElement.tagName() == "comment") {
+                    QString style = formatElement.attribute("style");
+                    QString regex = formatElement.text();
+                    addSingleRule(style, regex, true);
+                    
                 // The mutliline specifies an expression spanning multiple lines
                 } else if (formatElement.tagName() == "multiline") {
                     QString style = formatElement.attribute("style");
@@ -250,17 +256,20 @@ void SyntaxHighlighter::setLanguage(QString lang) {
     this->rehighlight();
 }
 
-void SyntaxHighlighter::addSingleRule(QString category, QString expression) {
+void SyntaxHighlighter::addSingleRule(QString category, QString expression, bool isComment) {
     SyntaxRule rule;
     rule.multiLine = false;
+    rule.lineComment = isComment;
     rule.format = formatMap[category];
     rule.pattern = QRegularExpression(expression);
+    rule.startExpr = expression;
     syntaxRules.append(rule);
 }
 
 void SyntaxHighlighter::addDoubleRule(QString category, QString startExpr, QString endExpr) {
     SyntaxRule rule;
     rule.multiLine = true;
+    rule.lineComment = false;
     rule.format = formatMap[category];
     rule.startExpr = startExpr;
     rule.endExpr = endExpr;
@@ -274,11 +283,34 @@ void SyntaxHighlighter::highlightBlock(const QString &text) {
     // Handle single rules
     for (SyntaxRule rule : syntaxRules) {
         if (rule.multiLine) continue;
+        if (rule.lineComment) continue;
         QRegularExpressionMatchIterator iterator = rule.pattern.globalMatch(text);
         while (iterator.hasNext()) {
             QRegularExpressionMatch match = iterator.next();
             setFormat(match.capturedStart(), match.capturedLength(), rule.format);
         }
+    }
+    
+    // Handle single-line comments
+    for (SyntaxRule rule : syntaxRules) {
+        if (!rule.lineComment) continue;
+        int start = 0;
+        int state = previousBlockState();
+        
+        for (int i = 0; i<text.length(); i++) {
+            if (text.mid(i, rule.startExpr.length()) == rule.startExpr) {
+                start = i;
+                state = 2;
+            } else if (text[i] == '\n') {
+                state = -1;
+                setFormat(start, i - start + rule.endExpr.length(), rule.format);
+            }
+        }
+        
+        if (state > 0)
+            setFormat(start, text.length() - start, rule.format);
+     
+        setCurrentBlockState(state);
     }
     
     // Handle double-line comments

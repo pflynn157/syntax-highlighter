@@ -6,7 +6,7 @@
         <class id="types" style="types">\b$\b</class>
         
         <regex style="literal">".*"</regex>
-        <regex style="comment">//[^\n]*</regex>
+        <comment style="comment">//</comment>
         
         <regex style="preprocessor">#(define|undef|error|pragma|ident|if(n?def)?|else|elif|endif|line|warning)[^\n]*</regex>
         <regex style="preprocessor">#include[^"]*</regex>

@@ -13,6 +13,7 @@ struct SyntaxRule {
     QString endExpr;
     QTextCharFormat format;
     bool multiLine;
+    bool lineComment;
     int statePos;
 };
 
@@ -22,7 +23,7 @@ public:
     explicit SyntaxHighlighter(QTextDocument *parent);
     void setTheme(QString name);
     void setLanguage(QString lang);
-    void addSingleRule(QString category, QString expression);
+    void addSingleRule(QString category, QString expression, bool isComment = false);
     void addDoubleRule(QString category, QString startExpr, QString endExpr);
 protected:
     void highlightBlock(const QString &text) override;
