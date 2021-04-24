@@ -21,9 +21,7 @@ class SyntaxHighlighter : public QSyntaxHighlighter {
 public:
     explicit SyntaxHighlighter(QTextDocument *parent);
     void addSingleRule(QString category, QString expression);
-    void addSingleRule(QTextCharFormat format, QString expression);
     void addDoubleRule(QString category, QString startExpr, QString endExpr);
-    void addDoubleRule(QTextCharFormat format, QString startExpr, QString endExpr);
 protected:
     void highlightBlock(const QString &text) override;
 private:

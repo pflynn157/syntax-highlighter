@@ -1,5 +1,4 @@
 #include <QTextEdit>
-#include <QTextCharFormat>
 #include <QStringLiteral>
 
 #include "window.hpp"
@@ -14,7 +13,7 @@ Window::Window() {
     this->setCentralWidget(edit);
     
     // Add keywords
-    QTextCharFormat format = QTextCharFormat();
+    /*QTextCharFormat format = QTextCharFormat();
     format.setForeground(Qt::darkGreen);
     format.setFontWeight(QFont::Bold);
     
@@ -26,15 +25,11 @@ Window::Window() {
     }
     
     // Add quotes
-    //format.setForeground(Qt::red);
     highlight->addSingleRule("literal", QStringLiteral("\".*\""));
     
     // Double-line comments
-    //format.setFontWeight(QFont::Bold);
-    //format.setForeground(Qt::blue);
-    
-    highlight->addDoubleRule("comment", QStringLiteral("/*"), QStringLiteral("*/"));
-    highlight->addDoubleRule("comment", QStringLiteral("/+"), QStringLiteral("+/"));
+    highlight->addDoubleRule("comment", QStringLiteral("/*"), QStringLiteral("/"));
+    highlight->addDoubleRule("comment", QStringLiteral("/+"), QStringLiteral("+/"));*/
 }
 
 Window::~Window() {

@@ -86,30 +86,10 @@ void SyntaxHighlighter::addSingleRule(QString category, QString expression) {
     syntaxRules.append(rule);
 }
 
-void SyntaxHighlighter::addSingleRule(QTextCharFormat format, QString expression) {
-    SyntaxRule rule;
-    rule.multiLine = false;
-    rule.format = format;
-    rule.pattern = QRegularExpression(expression);
-    syntaxRules.append(rule);
-}
-
 void SyntaxHighlighter::addDoubleRule(QString category, QString startExpr, QString endExpr) {
     SyntaxRule rule;
     rule.multiLine = true;
     rule.format = formatMap[category];
-    rule.startExpr = startExpr;
-    rule.endExpr = endExpr;
-    rule.statePos = statePos;
-    syntaxRules.append(rule);
-    
-    ++statePos;
-}
-
-void SyntaxHighlighter::addDoubleRule(QTextCharFormat format, QString startExpr, QString endExpr) {
-    SyntaxRule rule;
-    rule.multiLine = true;
-    rule.format = format;
     rule.startExpr = startExpr;
     rule.endExpr = endExpr;
     rule.statePos = statePos;
