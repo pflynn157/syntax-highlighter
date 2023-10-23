@@ -1,15 +1,15 @@
-cmake_minimum_required(VERSION 3.0.0)
-project(uds-syntax-highlighter)
+cmake_minimum_required(VERSION 3.10.0)
+project(syntax-highlighter)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-add_compile_options(-std=c++14)
+add_compile_options(-std=c++17)
 
 include_directories(lib)
 
-find_package(Qt5 REQUIRED COMPONENTS
+find_package(Qt6 REQUIRED COMPONENTS
     Core
     Widgets
     Gui
